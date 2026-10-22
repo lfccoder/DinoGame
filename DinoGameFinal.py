@@ -1,7 +1,5 @@
-import pygame
 import sys
-import random
-import time
+import pygame
 from DinoGameMain import dino
 pygame.init()
 
