@@ -37,6 +37,12 @@ class dino:
     clock = pygame.time.Clock()
     animation_timer = 0
 
+    world_speed = 10.0
+    obs_spawn_min = 10
+    obs_spawn_max = 25
+    obs_spawn_timer = 0
+    obstacle = []
+
     def RunGame(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -62,6 +68,9 @@ class dino:
 
         self.screen.fill((0, 0, 0))
         self.screen.blit(self.dino_sprites[self.current_sprite_index], (100, 100))
+
+        for o in self.obstacles:
+        pygame.draw.rect(self.screen, (255,0,0), (o.posX, o.posY, o.width, o.height))
 
 
 
