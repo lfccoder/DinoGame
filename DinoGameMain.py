@@ -1,11 +1,16 @@
 import pygame
+
+
+from random import randint
+
+from DinoObstacle import Obstacle
+
 class dino:
     def __init__(self):
         pass
 
 
     dino_sprite_index = 0,0
-
     spritefolder ="DinoGame/DINOSPRITE/"
     screen = pygame.display.set_mode((800, 600))
     Dino = pygame.image.load(spritefolder + "sprite_00.png").convert_alpha()
@@ -37,11 +42,15 @@ class dino:
     clock = pygame.time.Clock()
     animation_timer = 0
 
+    obs_spawn_pos_x = 850
+    obs_spawn_pos_y = 142
+
     world_speed = 10.0
-    obs_spawn_min = 10
-    obs_spawn_max = 25
+    obs_spawn_min = 35
+    obs_spawn_max = 57.5
     obs_spawn_timer = 0
-    obstacle = []
+    obs_spawn_run = randint(obs_spawn_min, obs_spawn_max)
+    obstacles = []
 
     def RunGame(self):
         for event in pygame.event.get():
@@ -66,11 +75,37 @@ class dino:
             if self.current_sprite_index > self.dino_sprite_index[1]:
                 self.current_sprite_index = self.dino_sprite_index[0]
 
+        self.obs_spawn_timer += 1
+
+        if self.obs_spawn_timer >= self.obs_spawn_run:
+            ran_obstacle = randint(0,1)
+            new_obstacle = None
+            if ran_obstacle == 0:
+                new_obstacle = Obstacle(self.obs_spawn_pos_x,
+                                        self.obs_spawn_pos_y,width = 32, height = 32, screen = self.screen,
+                                        speed = self.world_speed,  image = None)
+
+            elif ran_obstacle == 1:
+                new_obstacle = Obstacle(self.obs_spawn_pos_x,
+                                        self.obs_spawn_pos_y,width = 32, height = 32, screen = self.screen,
+                                        speed = self.world_speed, image = None)
+
+            self.obstacles.append(new_obstacle)
+
+            self.obs_spawn_timer = 0
+            self.obs_spawn_run = randint(self.obs_spawn_min, self.obs_spawn_max)
+
+        for o in self.obstacles:
+            o.posX -= self.world_speed
+            if o.posX <= self.world_speed:
+                self.obstacles.remove(o)
+
         self.screen.fill((0, 0, 0))
         self.screen.blit(self.dino_sprites[self.current_sprite_index], (100, 100))
 
         for o in self.obstacles:
-        pygame.draw.rect(self.screen, (255,0,0), (o.posX, o.posY, o.width, o.height))
+            pygame.draw.rect(self.screen, (255,0,0), (o.posX, o.posY, o.width, o.height))
+
 
 
 
