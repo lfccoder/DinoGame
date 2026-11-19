@@ -1,5 +1,7 @@
 import pygame
 
+
+
 class Obstacle(pygame.sprite.Sprite):
     width = 32
     height = 32
@@ -8,7 +10,7 @@ class Obstacle(pygame.sprite.Sprite):
     speed = 0
     screen = None
     image = None
-
+    hitbox = None
     def __init__(self, posX,posY,width,height,screen, image,speed):
         super().__init__()
         self.posX = posX
@@ -18,5 +20,9 @@ class Obstacle(pygame.sprite.Sprite):
         self.speed = speed
         self.screen = screen
         self.image = image
+        self.hitbox = pygame.Rect(self.posX,self.posY,self.width,self.height)
+
+    def update(self):
+        self.hitbox = pygame.Rect(self.posX, self.posY, self.width, self.height)
 
 
