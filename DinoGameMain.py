@@ -47,30 +47,55 @@ class dino:
 
     world_speed = 10.0
     obs_spawn_min = 35
-    obs_spawn_max = 57.5
+    obs_spawn_max = 57
     obs_spawn_timer = 0
     obs_spawn_run = randint(obs_spawn_min, obs_spawn_max)
     obstacles = []
+    pygame.font.init()
+    font = pygame.font.SysFont("Arial", 20)
+    scoretext = font.render("Score: 0", True, (255, 255, 255))
+    score = 0
+    secondtimer = 0
+
+
+    is_jumping = False
+    player_y = 100
+    ground_y = 100
+    velocity_y = 0.0
+    gravity = 0.6
+    jump_velocity = -10
+
+
+    is_crouching = False
+
+    playerhitbox = pygame.Rect(121.5, player_y + 3, 54, 69)
 
     def RunGame(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
-                self.dino_sprite_index = 3, 4
+                if event.key == pygame.K_SPACE and not self.is_jumping:
+                    self.is_jumping = True
+                    self.velocity_y = self.jump_velocity
+                if event.key == pygame.K_DOWN:
+                    self.is_crouching = True
             elif event.type == pygame.KEYUP:
-                self.dino_sprite_index = 0, 2
+                if event.key == pygame.K_DOWN:
+                    self.is_crouching = False
             #elif event.type == #zaself.collide_rect(object):
              #   self.dino_sprite_index = 5, 16
               #  running = False
-            else:
-                self.dino_sprite_index = 0, 3
+
+        if self.is_crouching:
+            self.dino_sprite_index = 3, 4
+        else:
+            self.dino_sprite_index = 0, 2
 
         self.animation_timer += 1
         if self.animation_timer >= 10:
-            self.current_sprite_index = (self.current_sprite_index + 1) % len(self.dino_sprites)
+            #self.current_sprite_index = (self.current_sprite_index + 1) % len(self.dino_sprites)
             self.animation_timer = 0
-
             self.current_sprite_index += 1
             if self.current_sprite_index > self.dino_sprite_index[1]:
                 self.current_sprite_index = self.dino_sprite_index[0]
@@ -100,16 +125,42 @@ class dino:
             if o.posX <= self.world_speed:
                 self.obstacles.remove(o)
 
-        self.screen.fill((0, 0, 0))
-        self.screen.blit(self.dino_sprites[self.current_sprite_index], (100, 100))
+        if self.is_jumping:
+            self.player_y += self.velocity_y
+
+            self.velocity_y += self.gravity
+
+            if self.player_y >= self.ground_y:
+                self.player_y = self.ground_y
+                self.velocity_y = 0
+                self.is_jumping = False
+
+        self.playerhitbox = pygame.Rect(121.5, self.player_y + 3, 54, 69)
+
+        self.score += 1
+        self.secondtimer += 1
+        if self.secondtimer > 60:
+            self.score += 10
+            self.secondtimer = 0
+
+
+
 
         for o in self.obstacles:
+            o.update()
+            if o.hitbox.colliderect(self.playerhitbox):
+                self.score = 0
+                self.obstacles.remove(o)
+
+
+
+        self.screen.fill((0, 0, 0))
+        self.screen.blit(self.dino_sprites[self.current_sprite_index], (100, self.player_y))
+
+        pygame.draw.rect(self.screen, (255,0,0), (121.5, self.player_y+3, 54, 69))
+        self.scoretext = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
+        self.screen.blit(self.scoretext, (400, 100))
+        for o in self.obstacles:
             pygame.draw.rect(self.screen, (255,0,0), (o.posX, o.posY, o.width, o.height))
-
-
-
-
-
-
 
 
