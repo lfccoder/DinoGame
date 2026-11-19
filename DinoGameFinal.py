@@ -1,8 +1,7 @@
-import sys
 import pygame
 from DinoGameMain import dino
+import sys
 pygame.init()
-
 g = dino()
 
 running = True
